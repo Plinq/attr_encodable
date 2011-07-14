@@ -36,11 +36,27 @@ module Encodable
     end
 
     def default_attributes
-      @default_attributes ||= []
+      @default_attributes ||= begin
+        default_attributes = []
+        superk = superclass
+        while superk.respond_to?(:default_attributes)
+          default_attributes.push(*superk.default_attributes)
+          superk = superk.superclass
+        end
+        default_attributes
+      end
     end
 
     def renamed_encoded_attributes
-      @renamed_encoded_attributes ||= {}
+      @renamed_encoded_attributes ||= begin
+        renamed_encoded_attributes = {}
+        superk = superclass
+        while superk.respond_to?(:renamed_encoded_attributes)
+          renamed_encoded_attributes.merge!(superk.renamed_encoded_attributes)
+          superk = superk.superclass
+        end
+        renamed_encoded_attributes
+      end
     end
 
     def unencodable_attributes

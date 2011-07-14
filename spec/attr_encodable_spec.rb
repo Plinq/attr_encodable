@@ -159,6 +159,11 @@ describe Encodable do
       @user.as_json.should == {'identifier' => @user.id}
     end
 
+    it "should let me reassign attributes alongside regular attributes" do
+      User.attr_encodable :login, :last_name, :id => :identifier
+      @user.as_json.should == {'identifier' => 1, 'login' => 'flipsasser', 'last_name' => 'sasser'}
+    end
+
     it "should let me reassign :methods" do
       User.attr_encodable :foobar => :w00t
       @user.as_json.should == {'w00t' => 'baz'}
