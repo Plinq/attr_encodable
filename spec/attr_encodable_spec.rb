@@ -174,4 +174,10 @@ describe Encodable do
       @user.as_json.should == {'t_id' => @user.id, 't_first_name' => @user.first_name, 't_foobar' => 'baz', 't_permissions' => @user.permissions.as_json}
     end
   end
+
+  it "should propagate down subclasses as well" do
+    User.attr_encodable :name
+    class SubUser < User; end
+    SubUser.unencodable_attributes.should == User.unencodable_attributes
+  end
 end

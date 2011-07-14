@@ -44,7 +44,15 @@ module Encodable
     end
 
     def unencodable_attributes
-      @unencodable_attributes ||= []
+      @unencodable_attributes ||= begin
+        unencodable_attributes = []
+        superk = superclass
+        while superk.respond_to?(:unencodable_attributes)
+          unencodable_attributes.push(*superk.unencodable_attributes)
+          superk = superk.superclass
+        end
+        unencodable_attributes
+      end
     end
   end
 
