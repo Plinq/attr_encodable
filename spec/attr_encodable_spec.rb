@@ -163,6 +163,11 @@ describe Encodable do
       User.attr_encodable :login, :last_name, :id => :identifier
       @user.as_json.should == {'identifier' => 1, 'login' => 'flipsasser', 'last_name' => 'sasser'}
     end
+    
+    it "should let me reassign multiple attributes with one delcaration" do
+      User.attr_encodable :id => :identifier, :first_name => :foobar
+      @user.as_json.should == {'identifier' => 1, 'foobar' => 'flip'}
+    end
 
     it "should let me reassign :methods" do
       User.attr_encodable :foobar => :w00t

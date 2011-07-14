@@ -15,19 +15,25 @@ module Encodable
         unencodable_attributes.push *column_names.map(&:to_sym)
         @encodable_whitelist_started = true
       end
-      attributes.each do |attribute|
-        if attribute.is_a?(Hash)
-          method, value = attribute.keys.first.to_sym, attribute.values.first.to_sym
-        else
-          method, value = attribute.to_sym, attribute.to_sym
-        end
+      stash_encodable_attribute = lambda {|method, value|
         if prefix
-          value = "#{prefix}_#{value}".to_sym
+          value = "#{prefix}_#{value}"
         end
+        method = method.to_sym
+        value = value.to_sym
         renamed_encoded_attributes.merge!({method => value}) if method != value
         # Un-black-list any attribute we white-listed
         unencodable_attributes.delete method
         default_attributes.push method
+      }
+      attributes.each do |attribute|
+        if attribute.is_a?(Hash)
+          attribute.each do |method, value|
+            stash_encodable_attribute.call(method, value)
+          end
+        else
+          stash_encodable_attribute.call(attribute, attribute)
+        end
       end
     end
 
