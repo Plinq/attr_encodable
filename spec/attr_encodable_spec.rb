@@ -48,17 +48,14 @@ describe Encodable do
     @user.permissions.create(:name => "create_blog_posts")
     @user.permissions.create(:name => "edit_blog_posts")
     # Reset the options for each test
-    Permission.class_eval do
-      @default_encodable_includes = nil
-      @default_encodable_methods = nil
-      @encodable_whitelist_started = nil
-      @unencodable_attributes = nil
-    end
-    User.class_eval do
-      @default_encodable_includes = nil
-      @default_encodable_methods = nil
-      @encodable_whitelist_started = nil
-      @unencodable_attributes = nil
+    [Permission, User].each do |klass|
+
+      klass.class_eval do
+        @default_attributes = nil
+        @encodable_whitelist_started = nil
+        @renamed_encoded_attributes = nil
+        @unencodable_attributes = nil
+      end
     end
   end
 
@@ -146,24 +143,35 @@ describe Encodable do
     # end
   end
 
-  describe "default include" do
-    it "should let me specify automatic includes" do
-      User.attr_encodable :permissions
-      @user.as_json.should == @user.attributes.merge(:permissions => @user.permissions.as_json)
-    end
+  it "should let me specify automatic includes as well as attributes" do
+    User.attr_encodable :login, :first_name, :id, :permissions
+    @user.as_json.should == @user.attributes.slice('login', 'first_name', 'id').merge(:permissions => @user.permissions.as_json)
   end
 
-  describe "default methods" do
-    it "should let me specify automatic methods" do
-      User.attr_encodable :foobar
-      @user.as_json.should == @user.attributes.merge(:foobar => "baz")
-    end
+  it "should let me specify methods as well as attributes" do
+    User.attr_encodable :login, :first_name, :id, :foobar
+    @user.as_json.should == @user.attributes.slice('login', 'first_name', 'id').merge(:foobar => "baz")
   end
 
   describe "reassigning" do
     it "should let me reassign attributes" do
       User.attr_encodable :id => :identifier
       @user.as_json.should == {'identifier' => @user.id}
+    end
+
+    it "should let me reassign :methods" do
+      User.attr_encodable :foobar => :w00t
+      @user.as_json.should == {'w00t' => 'baz'}
+    end
+
+    it "should let me reassign :include" do
+      User.attr_encodable :permissions => :deez_permissions
+      @user.as_json.should == {'deez_permissions' => @user.permissions.as_json}
+    end
+
+    it "should let me specify a prefix to a set of attr_encodable's" do
+      User.attr_encodable :id, :first_name, :foobar, :permissions, :prefix => :t
+      @user.as_json.should == {'t_id' => @user.id, 't_first_name' => @user.first_name, 't_foobar' => 'baz', 't_permissions' => @user.permissions.as_json}
     end
   end
 end
