@@ -1,7 +1,7 @@
 attr_encodable
 =
 
-**attr_encodable** adds attribute black- or white-listing for ActiveRecord serialization, as well as default serialization options. This is especially useful for protecting private attributes when building a public API.
+Never override `as_json` again! **attr_encodable** adds attribute black- or white-listing for ActiveRecord serialization, as well as default serialization options. This is especially useful for protecting private attributes when building a public API.
 
 Install
 ==
