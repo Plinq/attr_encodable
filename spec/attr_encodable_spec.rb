@@ -49,10 +49,14 @@ describe Encodable do
     @user.permissions.create(:name => "edit_blog_posts")
     # Reset the options for each test
     Permission.class_eval do
+      @default_encodable_includes = nil
+      @default_encodable_methods = nil
       @encodable_whitelist_started = nil
       @unencodable_attributes = nil
     end
     User.class_eval do
+      @default_encodable_includes = nil
+      @default_encodable_methods = nil
       @encodable_whitelist_started = nil
       @unencodable_attributes = nil
     end
@@ -140,5 +144,26 @@ describe Encodable do
     #   User.attr_unencodable :login, :first_name, :last_name
     #   @user.as_json.should == @user.attributes.except('login', 'first_name', 'last_name')
     # end
+  end
+
+  describe "default include" do
+    it "should let me specify automatic includes" do
+      User.attr_encodable :permissions
+      @user.as_json.should == @user.attributes.merge(:permissions => @user.permissions.as_json)
+    end
+  end
+
+  describe "default methods" do
+    it "should let me specify automatic methods" do
+      User.attr_encodable :foobar
+      @user.as_json.should == @user.attributes.merge(:foobar => "baz")
+    end
+  end
+
+  describe "reassigning" do
+    it "should let me reassign attributes" do
+      User.attr_encodable :id => :identifier
+      @user.as_json.should == {'identifier' => @user.id}
+    end
   end
 end
