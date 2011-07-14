@@ -12,20 +12,20 @@ Install using Rubygems:
 
 Install using Bundler:
 
-  gem 'attr_encodable'
+	gem 'attr_encodable'
 
 Install in Rails 2.x (in your environment.rb file)
 
-  config.gem 'attr_encodable'
+	config.gem 'attr_encodable'
 
 Usage
 ==
 
 You can whitelist or blacklist attributes for serialization using the `attr_encodable` and `attr_unencodable` class methods. For example:
 
-class User < ActiveRecord::Base
-  attr_encodable :id, :name, :email
-end
+	class User < ActiveRecord::Base
+		attr_encodable :id, :name, :email
+	end
 
 Now, when you call `to_json` on an instance of User, the only attributes that will be added to the JSON hash are :id, :name, and :email.
 
