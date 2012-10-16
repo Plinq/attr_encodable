@@ -50,13 +50,12 @@ Jeweler::Tasks.new do |gemspec|
   gemspec.summary = "An attribute black- or white-list for ActiveRecord serialization"
   gemspec.files = Dir["{lib}/**/*", "LICENSE", "README.md"]
   gemspec.description = %{
-    attr_encodable enables you to set up defaults for what is included or excluded when you serialize an ActiveRecord object. This is especially useful for protecting private attributes when building a public API.
+    attr_encodable enables you to set up defaults for what is included or excluded when you serialize an ActiveRecord object. This is especially useful
+    for protecting private attributes when building a public API.
   }
   gemspec.email = "flip@x451.com"
   gemspec.homepage = "http://github.com/Plinq/attr_encodable"
   gemspec.authors = ["Flip Sasser"]
   gemspec.test_files = Dir["{spec}/**/*"]
-  gemspec.add_development_dependency 'rcov', '>= 0.9.9'
   gemspec.add_development_dependency 'rspec', '>= 2.0'
-  gemspec.add_dependency 'redis', '>= 2.1.1'
 end

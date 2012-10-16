@@ -1,4 +1,5 @@
-require "lib/attr_encodable"
+require File.join(File.dirname(__FILE__), '..', 'lib', 'attr_encodable')#{}"../lib/attr_encodable"
+require 'active_support'
 
 describe Encodable do
   it "should automatically extend ActiveRecord::Base" do
@@ -38,7 +39,7 @@ describe Encodable do
       :first_name => "flip",
       :last_name => "sasser",
       :email => "flip@foobar.com",
-      :encrypted_password => ActiveSupport::SecureRandom.hex(30),
+      :encrypted_password => SecureRandom.hex(30),
       :developer => true,
       :admin => true,
       :password_set => true,
@@ -69,15 +70,15 @@ describe Encodable do
 
   describe "at the parent model level" do
     it "should not mess with to_json unless when attr_encodable and attr_unencodable are not set" do
-      @user.as_json == @user.attributes
+      @user.as_json.should == @user.attributes
     end
 
     it "should not mess with :include options" do
-      @user.as_json(:include => :permissions) == @user.attributes.merge(:permissions => @user.permissions.as_json)
+      @user.as_json(:include => :permissions).should == @user.attributes.merge(:permissions => @user.permissions.as_json)
     end
 
     it "should not mess with :methods options" do
-      @user.as_json(:methods => :foobar) == @user.attributes.merge(:foobar => "baz")
+      @user.as_json(:methods => :foobar).should == @user.attributes.merge(:foobar => "baz")
     end
 
     it "should allow me to whitelist attributes" do
@@ -89,6 +90,7 @@ describe Encodable do
       User.attr_unencodable :login, :first_name, :last_name
       @user.as_json.should == @user.attributes.except('login', 'first_name', 'last_name')
     end
+
 
     # Of note is the INSANITY of ActiveRecord in that it applies :only / :except to :include as well. Which is
     # obviously insane. Similarly, it doesn't allow :methods to come along when :only is specified. Good god, what
@@ -109,13 +111,13 @@ describe Encodable do
     end
   end
 
-  describe "at the child model level when the paren model has attr_encodable set" do
+  describe "at the child model level when the parent model has attr_encodable set" do
     before :each do
       User.attr_encodable :login, :first_name, :last_name
     end
 
     it "should not mess with to_json unless when attr_encodable and attr_unencodable are not set on the child, but are on the parent" do
-      @user.permissions.as_json == @user.permissions.map(&:attributes)
+      @user.permissions.as_json.should == @user.permissions.map(&:attributes)
     end
 
     it "should not mess with :include options" do
@@ -151,6 +153,16 @@ describe Encodable do
   it "should let me specify methods as well as attributes" do
     User.attr_encodable :login, :first_name, :id, :foobar
     @user.as_json.should == @user.attributes.slice('login', 'first_name', 'id').merge(:foobar => "baz")
+  end
+
+  it "should allow me to only request certain whitelisted attributes and methods" do
+    User.attr_encodable :login, :first_name, :last_name, :foobar
+    @user.as_json(:only => [:login, :foobar]).should == {'login' => 'flipsasser', :foobar => 'baz'}
+  end
+
+  it "should allow me to use :only with aliased methods and attributes" do
+    User.attr_encodable :login => :login_eh, :first_name => :foist, :last_name => :last, :foobar => :baz
+    @user.as_json(:only => [:login, :foobar]).should == {'login_eh' => 'flipsasser', 'baz' => 'baz'}
   end
 
   describe "reassigning" do
