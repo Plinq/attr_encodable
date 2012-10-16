@@ -169,6 +169,13 @@ User.attr_encodable :login, :admin, :email, :password, :as => :admin_api
 
 Now you can call `@user.to_json(:admin_api)` somewhere, which will include a full users' details, but any other `as_json` call will keep that information private.
 
+#### Scopes
+
+The use of `:as` also creates a scope on the class which is a SELECT limited only to those columns the class knows about. This enables higher-performance API calls out-of-the-box.
+
+Using the first example from above, calling `User.listing` would result in a `SELECT login FROM users` instead of the normal `SELECT * FROM users`. Since
+you're only going to be encoding the information from attr_encodable anyway, there's no sense in selecting anything else!
+
 Okay, that's all. Thanks for stopping by.
 
 Copyright &copy; 2011 Flip Sasser

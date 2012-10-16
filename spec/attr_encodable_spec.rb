@@ -217,5 +217,12 @@ describe Encodable do
       @user.as_json.should == @user.attributes
       @user.as_json(:short).should == {'id' => 1, 'first_name' => 'flip', 'last_name' => 'sasser'}
     end
+
+    it "should also create a named_scope that limits the SELECT statement to the included attributes" do
+      User.attr_encodable :id, :as => :short
+      User.first.first_name.should == 'flip'
+      lambda { User.short.first.first_name }.should raise_error(ActiveModel::MissingAttributeError)
+      User.short.first.id.should == 1
+    end
   end
 end

@@ -1,3 +1,6 @@
+# 0.1.2
+- Added scopes to `:as` options. This adds Class.as_name, which automatically restricts the SELECT to encodable attributes ONLY.
+
 # 0.1.1
 - Added support for `:as` in `attr_encodable` calls, allowing you to create custom default encoding groups. See README.md for more.
 

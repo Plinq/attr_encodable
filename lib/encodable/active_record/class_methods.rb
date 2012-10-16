@@ -19,6 +19,10 @@ module Encodable
             add_encodable_attribute(attribute, attribute, options)
           end
         end
+
+        if options[:as] != :default
+          scope options[:as], select(default_attributes(options[:as]).reject{|attribute| !column_names.include?(attribute.to_s)})
+        end
       end
 
       def add_encodable_attribute(method, value, options = {})
