@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = "attr_encodable"
-  s.version = "0.1.0"
+  s.version = "0.1.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Flip Sasser"]
@@ -19,7 +19,12 @@ Gem::Specification.new do |s|
   s.files = [
     "LICENSE",
     "README.md",
-    "lib/attr_encodable.rb"
+    "lib/attr_encodable.rb",
+    "lib/encodable.rb",
+    "lib/encodable/active_record.rb",
+    "lib/encodable/active_record/class_methods.rb",
+    "lib/encodable/active_record/instance_methods.rb",
+    "lib/encodable/array.rb"
   ]
   s.homepage = "http://github.com/Plinq/attr_encodable"
   s.require_paths = ["lib"]

@@ -1,5 +1,6 @@
-require File.join(File.dirname(__FILE__), '..', 'lib', 'attr_encodable')#{}"../lib/attr_encodable"
+require 'active_record'
 require 'active_support'
+require File.join(File.dirname(__FILE__), '..', 'lib', 'attr_encodable')
 
 describe Encodable do
   it "should automatically extend ActiveRecord::Base" do
@@ -61,11 +62,11 @@ describe Encodable do
   end
 
   it "should favor whitelisting to blacklisting" do
-    User.unencodable_attributes.should == []
+    User.unencodable_attributes(:default).should == []
     User.attr_unencodable 'foo', 'bar', 'baz'
-    User.unencodable_attributes.should == [:foo, :bar, :baz]
+    User.unencodable_attributes(:default).should == [:foo, :bar, :baz]
     User.attr_encodable :id, :first_name
-    User.unencodable_attributes.map(&:to_s).should == ['foo', 'bar', 'baz'] + User.column_names - ['id', 'first_name']
+    User.unencodable_attributes(:default).map(&:to_s).should == ['foo', 'bar', 'baz'] + User.column_names - ['id', 'first_name']
   end
 
   describe "at the parent model level" do
@@ -201,5 +202,20 @@ describe Encodable do
     User.attr_encodable :name
     class SubUser < User; end
     SubUser.unencodable_attributes.should == User.unencodable_attributes
+  end
+
+  describe "named groups" do
+    it "should be supported on a class-basis with a :name option" do
+      User.attr_unencodable :id
+      User.all.as_json.should == [@user.attributes.except('id')]
+      User.attr_encodable :id, :first_name, :last_name, :as => :short
+      User.all.as_json(:short).should == [{'id' => 1, 'first_name' => 'flip', 'last_name' => 'sasser'}]
+    end
+
+    it "should be supported on an instance-basis with a :name option" do
+      User.attr_encodable :id, :first_name, :last_name, :as => :short
+      @user.as_json.should == @user.attributes
+      @user.as_json(:short).should == {'id' => 1, 'first_name' => 'flip', 'last_name' => 'sasser'}
+    end
   end
 end
